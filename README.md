@@ -14,4 +14,4 @@ Select 'saveImage' to take a snapshot of the current tree and display it in anot
 
 Written in JavaScript with a touch of html/css for wrapping the drawing context.
 
-Uses the (dat.GUI)[http://workshop.chromeexperiments.com/examples/gui/] library for the control panel.
+Uses the [dat.GUI](http://workshop.chromeexperiments.com/examples/gui/) library for the control panel.

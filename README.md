@@ -2,7 +2,7 @@
 
 Simple 2D Fractal Tree generator implemented in JavaScript.
 
-[<img src="./FractalTree2D.png">](./FractalTree2D.html)
+[<img src="./FractalTree2D.png">](http://htmlpreview.github.io/?https://github.com/hanskellner/FractalTree2DJS/blob/master/fractalTree2D.html)
 
 Try it live by clicking on the image above!
 

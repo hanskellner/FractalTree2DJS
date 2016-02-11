@@ -1,0 +1,155 @@
+<html>
+<head>
+    <title>Fractal Tree 2D</title>
+    <meta name="description" content="Sample 2D fractal tree generator written in JavaScript.">
+    <meta name="keywords" content="HTML, CSS, JavaScript, Fractal">
+    <meta name="author" content="Hans Kellner">
+    <meta charset="UTF-8">
+    <style>
+    html, body {
+      width:  100%;
+      height: 100%;
+      margin: 10px;
+      overflow: hidden;
+      font: 14px/22px Arial, sans-serif;
+    }
+    .floatText {
+        position: absolute;
+        z-index: 1;
+        left: 10px; top: 10px; width:200px; height:50px;
+    }
+    </style>
+</head>
+<body>
+    <p class="floatText">Fractal Tree</p>
+
+<canvas id="canvas" width="1280" height="720"></canvas>
+
+<script type="text/javascript" src="dat.gui.min.js"></script>
+<script type="text/javascript">
+
+var elem = document.getElementById('canvas');
+var context = elem.getContext('2d');
+
+var TRUNK_ROOT_WIDTH = 10;   // 'diameter' of root trunk
+
+var COLOR_LEAVES = [
+    '#006400', // DarkGreen
+    '#556B2F', // DarkOliveGreen
+    '#008000', // Green
+    '#8B0000', // DarkRed
+    '#B22222', // FireBrick
+    '#FFD700', // Gold
+    '#DAA520'  // GoldenRod
+];
+
+var leafColor = COLOR_LEAVES[Math.floor(COLOR_LEAVES.length*Math.random())];
+var trunkColor = '#8B4513';  // SaddleBrown
+
+var deg_to_rad = Math.PI / 180.0;
+
+var recursionDepth = 9; // Number of levels to recurse
+
+var trunkLength = 50;   // Starting trunk length
+
+// Amount to adjust branch angle each iteration
+var angleChange1 = 27;
+var angleChange2 = 16;
+
+// Amount to reduce trunk length each iteration
+var lengthChange1 = 0.7;
+var lengthChange2 = 0.85;
+
+var randomAdjust = true;
+
+function drawTrunk(x1, y1, x2, y2, depth) {
+    context.strokeStyle = trunkColor;
+    context.lineWidth = TRUNK_ROOT_WIDTH * (depth / recursionDepth);
+    context.beginPath();
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
+    context.closePath();
+    context.stroke();
+}
+
+function drawLeaf(x1, y1, x2, y2, len) {
+    context.fillStyle = leafColor;
+    context.fillRect(x1-1, y1-3, 3, 6);
+}
+
+function drawTree(x1, y1, angle, len, depth){
+    var x2 = x1 + (Math.cos(angle * deg_to_rad) * len);
+    var y2 = y1 + (Math.sin(angle * deg_to_rad) * len);
+
+    // Is this a trunk?
+    if (depth > 0){
+
+        drawTrunk(x1, y1, x2, y2, depth);
+
+        var r = Math.random();
+        var l1 = lengthChange1;
+        var l2 = lengthChange2;
+        if (this.randomAdjust === true) {
+            l1 = l1 + ((r-0.5)*lengthChange1*0.99);
+            l2 = l2 + ((r-0.5)*lengthChange2*0.99);
+        }
+        var a1 = angleChange1;
+        var a2 = angleChange2;
+        if (this.randomAdjust === true) {
+            a1 = a1 + ((r-0.5)*angleChange1*0.99);
+            a2 = a2 + ((r-0.5)*angleChange2*0.99);
+        }
+
+        drawTree(x2, y2, angle - a1, len * l1, depth - 1);
+        drawTree(x2, y2, angle + a2, len * l2, depth - 1);
+    }
+    else { // leaf node
+        drawLeaf(x1, y1, x2, y2, len);
+    }
+}
+
+function createTree() {
+
+    context.canvas.width  = window.innerWidth - 20;
+    context.canvas.height = window.innerHeight - 20;
+
+    drawTree(canvas.width/2, canvas.height-50, -90, trunkLength, recursionDepth);
+}
+
+var TreeParams = function() {
+    this.recursionDepth = 9;
+    this.trunkLength = 50;
+    this.angleChange1 = 27;
+    this.angleChange2 = 16;
+    this.lengthChange1 = 0.7;
+    this.lengthChange2 = 0.85;
+    this.leafColor = leafColor;
+    this.trunkColor = trunkColor;
+    this.randomness = true;
+    this.saveImage = function() {
+        window.open(canvas.toDataURL('image/png'),'_blank');
+    };
+};
+
+var params = new TreeParams();
+
+var that = this;
+var gui = new dat.GUI();
+gui.add(params, 'recursionDepth', 2, 20).onChange(function(value) { that.recursionDepth = value; createTree(); });
+gui.add(params, 'trunkLength', 10, 200).onChange(function(value) { that.trunkLength = value; createTree(); });
+gui.add(params, 'angleChange1', 0, 90).onChange(function(value) { that.angleChange1 = value; createTree(); });
+gui.add(params, 'angleChange2', 0, 90).onChange(function(value) { that.angleChange2 = value; createTree(); });
+gui.add(params, 'lengthChange1').min(0.1).onChange(function(value) { that.lengthChange1 = value; createTree(); });
+gui.add(params, 'lengthChange2').min(0.1).onChange(function(value) { that.lengthChange2 = value; createTree(); });
+gui.addColor(params, 'leafColor').onChange(function(value) { that.leafColor = value; createTree(); });
+gui.addColor(params, 'trunkColor').onChange(function(value) { that.trunkColor = value; createTree(); });
+gui.add(params, 'randomness').onChange(function(value) { that.randomAdjust = value; createTree(); });
+gui.add(params, 'saveImage');
+
+// Create the initial tree
+createTree();
+
+</script>
+
+</body>
+</html>
